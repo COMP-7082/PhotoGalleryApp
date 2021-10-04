@@ -4,9 +4,12 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Mohammed/Documents/BCIT Notes/BTech Term 1/COMP 7082 (Soft Eng)/PhotoGalleryApp/app/src/main/res/layout/activity_search.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Mohammed/Documents/BCIT Notes/BTech Term 1/COMP 7082 (Soft Eng)/Proper one/PhotoGalleryApp/app/src/main/res/layout/activity_main.xml" value="0.2689969604863222" />
+        <entry key="..\:/Users/Mohammed/Documents/BCIT Notes/BTech Term 1/COMP 7082 (Soft Eng)/Proper one/PhotoGalleryApp/app/src/main/res/layout/activity_search.xml" value="0.2689969604863222" />
       </map>
     </option>
   </component>
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
