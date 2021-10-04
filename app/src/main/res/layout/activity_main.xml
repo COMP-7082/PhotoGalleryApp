@@ -66,6 +66,19 @@
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="622dp" />
 
+    <Button
+        android:id="@+id/btnSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="25dp"
+        android:layout_marginBottom="25dp"
+        android:onClick="searchButton"
+        android:text="@string/button_search"
+        tools:layout_editor_absoluteX="291dp"
+        tools:layout_editor_absoluteY="635dp" />
+
     <TextView
         android:id="@+id/tvTimestamp"
         android:layout_width="340dp"

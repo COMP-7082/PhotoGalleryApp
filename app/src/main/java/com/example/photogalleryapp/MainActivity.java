@@ -67,6 +67,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private ArrayList<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords){
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "/Android/data/com.example.photogalleryapp/files/Pictures");
+        ArrayList<String> photos = new ArrayList<>();
+        File[] fList = file.listFiles();
+        if(fList != null){
+            for (File f : fList) {
+                if (((startTimestamp == null && endTimestamp == null) || (f.lastModified() >= startTimestamp.getTime()
+                        && f.lastModified() <= endTimestamp.getTime())) && (keywords.equals("") || f.getPath().contains(keywords))) {
+                    photos.add(f.getPath());
+                }
+            }
+        }
+        return photos;
+    }
+
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -91,6 +106,15 @@ public class MainActivity extends AppCompatActivity {
             String[] attr = path.split("_");
             et.setText(attr[1]);
             tv.setText("Date: " + attr[2] + " Time: " + attr[3]);
+        }
+    }
+
+    private void updatePhoto(String path, String caption) {
+        String[] attr = path.split("_");
+        if (attr.length >= 3) {
+            File to = new File(attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3] +"_");
+            File from = new File(path);
+            from.renameTo(to);
         }
     }
 
