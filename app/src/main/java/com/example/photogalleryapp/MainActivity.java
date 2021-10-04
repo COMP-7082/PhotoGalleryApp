@@ -12,6 +12,7 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,6 +77,23 @@ public class MainActivity extends AppCompatActivity {
         return image;
     }
 
+    private void displayPhoto(String path) {
+        ImageView iv = findViewById(R.id.ivGallery);
+        TextView tv = findViewById(R.id.tvTimestamp);
+        EditText et = findViewById(R.id.etCaption);
+
+        if(path == null || path.equals("")){
+            iv.setImageResource(R.mipmap.ic_launcher);
+            et.setText("");
+            tv.setText("");
+        } else {
+            iv.setImageBitmap(BitmapFactory.decodeFile(path));
+            String[] attr = path.split("_");
+            et.setText(attr[1]);
+            tv.setText("Date: " + attr[2] + " Time: " + attr[3]);
+        }
+    }
+
     public void takePhoto(View v){
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null){
@@ -92,5 +110,24 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         }
+    }
+
+    public void scrollPhotos(View v) {
+        updatePhoto(photos.get(index), ((EditText) findViewById(R.id.etCaption)).getText().toString());
+        switch (v.getId()) {
+            case R.id.btnPrev:
+                if(index > 0){
+                    index--;
+                }
+                break;
+            case R.id.btnNext:
+                if(index < (photos.size() - 1)) {
+                    index++;
+                }
+                break;
+            default:
+                break;
+        }
+        displayPhoto(photos.get(index));
     }
 }
