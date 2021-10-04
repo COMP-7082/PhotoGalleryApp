@@ -1,5 +1,8 @@
 <resources>
-    <string name="app_name">My First App</string>
+    <string name="app_name">Photo Gallery App</string>
     <string name="edit_message">Enter a message</string>
-    <string name="button_send">Send</string>
+    <string name="button_send">Snap</string>
+    <string name="button_next">Next</string>
+    <string name="button_prev">Prev</string>
+    <string name="button_search">Search</string>
 </resources>
