@@ -32,6 +32,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
+        if (photos.size() == 0){
+            displayPhoto(null);
+        } else {
+            displayPhoto(photos.get(index));
+        }
     }
 
     @Override
@@ -153,5 +159,10 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         displayPhoto(photos.get(index));
+    }
+
+    public void searchButton(View v){
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
     }
 }
