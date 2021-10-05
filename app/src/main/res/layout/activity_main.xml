@@ -84,7 +84,6 @@
         android:layout_width="340dp"
         android:layout_height="42dp"
         android:layout_centerInParent="true"
-        android:layout_centerVertical="true"
         android:layout_marginStart="16dp"
         android:layout_marginTop="345dp"
         android:layout_marginEnd="55dp"
@@ -110,5 +109,71 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="0dp" />
+
+
+    <Button
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="25dp"
+        android:layout_marginBottom="124dp"
+        android:onClick="getLocation"
+        android:text="GET LOCATION"
+        tools:layout_editor_absoluteX="291dp"
+        tools:layout_editor_absoluteY="635dp" />
+
+    <TextView
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="172dp"
+        android:layout_marginBottom="144dp"
+        android:text="Latitude"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/latitude"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="254dp"
+        android:layout_marginBottom="144dp"
+
+        android:text="38.4219983333"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="146dp"
+        android:layout_marginBottom="97dp"
+        android:text="Longitude"
+        android:textSize="18sp"
+
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/longitude"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="240dp"
+        android:layout_marginBottom="95dp"
+        android:text="-65.0849"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
 </RelativeLayout>
