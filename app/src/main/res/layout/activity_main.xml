@@ -177,4 +177,13 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
+    <Button
+        android:id="@+id/shareBtn"
+        android:layout_width="119dp"
+        android:layout_height="60dp"
+        android:onClick="shareButton"
+        android:text="Share"
+        android:translationX="150dp"
+        android:translationY="650dp" />
+
 </RelativeLayout>
