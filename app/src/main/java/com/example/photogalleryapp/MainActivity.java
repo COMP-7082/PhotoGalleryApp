@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -185,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
     private void updatePhoto(String path, String caption) {
         String[] attr = path.split("_");
         if (attr.length >= 3) {
-            File to = new File(attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3] + "_" + attr[4] + "_");
+            File to = new File(attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3] + "_" + attr[4] + "_" + ".jpeg");
             File from = new File(path);
             from.renameTo(to);
         }
@@ -237,7 +238,9 @@ public class MainActivity extends AppCompatActivity {
     public void shareButton(View v) {
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
-        shareIntent.putExtra(Intent.EXTRA_STREAM, photos.get(index));
+        File photoFile = new File(photos.get(0));
+        Uri photoURI = FileProvider.getUriForFile(this, "com.example.photogalleryapp.fileprovider", photoFile);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, photoURI);
         shareIntent.setType("image/jpeg");
 
         startActivity(Intent.createChooser(shareIntent, "Share to"));
