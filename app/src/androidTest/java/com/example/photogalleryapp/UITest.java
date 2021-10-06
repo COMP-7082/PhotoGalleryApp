@@ -44,13 +44,6 @@ public class UITest {
     @Rule
     public IntentsTestRule<MainActivity> intentsRule = new IntentsTestRule<>(MainActivity.class);
 
-//    @Test
-//    public void useAppContext() {
-//        // Context of the app under test.
-//        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-//        assertEquals("com.example.photogalleryapp", appContext.getPackageName());
-//    }
-
     @Test
     public void UITest() {
         // Create a bitmap we can use for our simulated camera image

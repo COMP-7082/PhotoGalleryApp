@@ -5,4 +5,5 @@
     <string name="button_next">Next</string>
     <string name="button_prev">Prev</string>
     <string name="button_search">Search</string>
+    <string name="text_location">City</string>
 </resources>
