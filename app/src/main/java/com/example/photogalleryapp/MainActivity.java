@@ -232,4 +232,14 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
     }
+
+    // Share to social media
+    public void shareButton(View v) {
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, photos.get(index));
+        shareIntent.setType("image/jpeg");
+
+        startActivity(Intent.createChooser(shareIntent, "Share to"));
+    }
 }
