@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
     public void shareButton(View v) {
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
-        File photoFile = new File(photos.get(0));
+        File photoFile = new File(photos.get(index));
         Uri photoURI = FileProvider.getUriForFile(this, "com.example.photogalleryapp.fileprovider", photoFile);
         shareIntent.putExtra(Intent.EXTRA_STREAM, photoURI);
         shareIntent.setType("image/jpeg");
