@@ -1,4 +1,4 @@
-package com.example.photogalleryapp;
+package com.example.photogalleryapp.views;
 
 import android.Manifest;
 import android.content.Intent;
@@ -10,8 +10,6 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,6 +20,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import com.example.photogalleryapp.GpsTracker;
+import com.example.photogalleryapp.R;
+import com.example.photogalleryapp.SearchActivity;
+import com.example.photogalleryapp.presenters.MainPresenter;
+import com.example.photogalleryapp.presenters.MainPresenterImpl;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -35,7 +38,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainView {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int SEARCH_ACTIVITY_REQUEST_CODE = 2;
     String mCurrentPhotoPath;
@@ -43,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> photos = null;
     private int index = 0;
     private TextView tvCity;
+    private MainPresenter presenter;
 
 
 
@@ -50,6 +54,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        presenter = new MainPresenterImpl(this); //Adding presenter
+        presenter.bindView(this);
+
         FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -74,12 +82,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "", "");
-        if (photos.size() == 0){
-            displayPhoto(null);
-        } else {
-            displayPhoto(photos.get(index));
-        }
+        presenter.findPhotos(new Date(Long.MIN_VALUE), new Date(), "", "");
     }
 
     public void getLocation(View view){
@@ -104,8 +107,7 @@ public class MainActivity extends AppCompatActivity {
         }else{
             gpsTracker.showSettingsAlert();
         }
-    }
-
+    } // Getting Data
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -156,17 +158,12 @@ public class MainActivity extends AppCompatActivity {
         return photos;
     }
 
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.CANADA).format(new Date());
-        String imageFileName = "_caption_" + timeStamp + "_" + cityName +"_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
-        mCurrentPhotoPath = image.getAbsolutePath();
-        return image;
+    public void takePhoto(View v){
+        presenter.takePhoto();
     }
 
-    private void displayPhoto(String path) {
+    @Override
+    public void displayPhoto(String path) {
         ImageView iv = findViewById(R.id.ivGallery);
         TextView tv = findViewById(R.id.tvTimestamp);
         EditText et = findViewById(R.id.etCaption);
@@ -190,49 +187,27 @@ public class MainActivity extends AppCompatActivity {
             File from = new File(path);
             from.renameTo(to);
         }
-    }
+    } // Getting Data
 
-    public void takePhoto(View v){
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null){
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                //Error occurred while creating the File
-            }
-            // Continue only if the File was successfully created
-            if(photoFile != null){
-                Uri photoURI = FileProvider.getUriForFile(this, "com.example.photogalleryapp.fileprovider", photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-            }
-        }
-    }
 
     public void scrollPhotos(View v) {
-        updatePhoto(photos.get(index), ((EditText) findViewById(R.id.etCaption)).getText().toString());
+        //updatePhoto(photos.get(index), ((EditText) findViewById(R.id.etCaption)).getText().toString());
         switch (v.getId()) {
             case R.id.btnPrev:
-                if(index > 0){
-                    index--;
-                }
+                presenter.handleNavigationInput("ScrollLeft", "caption");
                 break;
             case R.id.btnNext:
-                if(index < (photos.size() - 1)) {
-                    index++;
-                }
+                presenter.handleNavigationInput("ScrollRight", "caption");
                 break;
             default:
                 break;
         }
-        displayPhoto(photos.get(index));
     }
 
     public void searchButton(View v){
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
-    }
+    } // Getting Data
 
     // Share to social media
     public void shareButton(View v) {
@@ -244,5 +219,5 @@ public class MainActivity extends AppCompatActivity {
         shareIntent.setType("image/jpeg");
 
         startActivity(Intent.createChooser(shareIntent, "Share to"));
-    }
+    } // Getting Data
 }
