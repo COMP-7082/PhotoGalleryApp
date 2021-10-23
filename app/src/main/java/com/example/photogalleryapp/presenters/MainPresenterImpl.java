@@ -1,5 +1,6 @@
 package com.example.photogalleryapp.presenters;
 
+import static android.app.Activity.RESULT_OK;
 import static androidx.core.app.ActivityCompat.startActivityForResult;
 
 import android.app.Activity;
@@ -11,12 +12,14 @@ import android.provider.MediaStore;
 
 import androidx.core.content.FileProvider;
 
+import com.example.photogalleryapp.SearchActivity;
 import com.example.photogalleryapp.model.Photo;
 import com.example.photogalleryapp.model.PhotoRepository;
 import com.example.photogalleryapp.views.MainView;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,6 +36,7 @@ public class MainPresenterImpl implements MainPresenter {
     private PhotoRepository repository;
     private int index = 0;
 
+    static final int SEARCH_ACTIVITY_REQUEST_CODE = 0;
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
     @Override
@@ -48,6 +52,38 @@ public class MainPresenterImpl implements MainPresenter {
     public MainPresenterImpl(Activity context) {
         this.context = context;
         repository = new PhotoRepository(context);
+    }
+
+    public void onReturn(int requestCode, int resultCode, Intent data){
+        if (requestCode == SEARCH_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                DateFormat format = new SimpleDateFormat("yyyy‐MM‐dd HH:mm:ss", Locale.CANADA);
+                Date startTimestamp , endTimestamp;
+                try {
+                    String from = data.getStringExtra("STARTTIMESTAMP");
+                    String to = data.getStringExtra("ENDTIMESTAMP");
+                    startTimestamp = format.parse(from);
+                    endTimestamp = format.parse(to);
+                } catch (Exception ex) {
+                    startTimestamp = null;
+                    endTimestamp = null;
+                }
+                String keywords = data.getStringExtra("KEYWORDS");
+                String locate = data.getStringExtra("LOCATE");
+                index = 0;
+                findPhotos(startTimestamp, endTimestamp, keywords, locate);
+                if (repository.getPhotos().size() == 0) {
+                    view.displayPhoto(null);
+                } else {
+                    view.displayPhoto(repository.getPhotos().get(index).getPhotoPath());
+                }
+            }
+        }
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            //ImageView mImageView = findViewById(R.id.ivGallery);
+            //mImageView.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath));
+            findPhotos(new Date(Long.MIN_VALUE), new Date(), "", "");
+        }
     }
 
     public void findPhotos(Date startTimestamp, Date endTimestamp, String keywords, String locate){
@@ -99,6 +135,15 @@ public class MainPresenterImpl implements MainPresenter {
         return image;
     }
 
+    public void updatePhoto(String caption) {
+        String path = repository.getPhotos().get(index).getPhotoPath();
+        String[] attr = path.split("_");
+        if (attr.length >= 3) {
+            File to = new File(attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3] + "_" + attr[4] + "_" + ".jpeg");
+            File from = new File(path);
+            from.renameTo(to);
+        }
+    }
 
     public void handleNavigationInput(String navigationAction, String caption){
 
@@ -119,5 +164,20 @@ public class MainPresenterImpl implements MainPresenter {
                 break;
         }
 
+    }
+
+    public Intent sharePhoto() {
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        File photoFile = new File(repository.getPhotos().get(index).getPhotoPath());
+        Uri photoURI = FileProvider.getUriForFile(context, "com.example.photogalleryapp.fileprovider", photoFile);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, photoURI);
+        shareIntent.setType("image/jpeg");
+        return shareIntent;
+    }
+
+    public Intent search() {
+        Intent intent = new Intent(context, SearchActivity.class);
+        return intent;
     }
 }
