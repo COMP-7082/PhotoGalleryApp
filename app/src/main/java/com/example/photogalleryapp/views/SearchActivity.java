@@ -1,17 +1,34 @@
-package com.example.photogalleryapp;
+package com.example.photogalleryapp.views;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
-import android.content.Intent; import android.os.Bundle;
-import android.view.View; import android.widget.EditText;
-import java.text.DateFormat; import java.text.SimpleDateFormat;
-import java.util.Calendar; import java.util.Date;
+
+import com.example.photogalleryapp.R;
+import com.example.photogalleryapp.presenters.SearchPresenter;
+import com.example.photogalleryapp.presenters.SearchPresenterImpl;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity implements SearchView{
+    private SearchPresenter presenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        presenter = new SearchPresenterImpl(this) {
+        }; //Adding presenter
+        presenter.bindView(this);
+
         try {
             Calendar calendar = Calendar.getInstance();
             DateFormat format = new SimpleDateFormat("yyyy‐MM‐dd");

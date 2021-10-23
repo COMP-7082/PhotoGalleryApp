@@ -15,4 +15,6 @@ public interface MainPresenter extends BasePresenter<MainView> {
     Intent sharePhoto();
     Intent search();
     void updatePhoto(String caption);
+    void fusedLocationClient();
+    String getLocation();
 }

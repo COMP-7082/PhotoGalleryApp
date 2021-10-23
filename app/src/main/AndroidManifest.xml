@@ -28,7 +28,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SearchActivity"
+            android:name=".views.SearchActivity"
             android:exported="true">
         </activity>
         <provider

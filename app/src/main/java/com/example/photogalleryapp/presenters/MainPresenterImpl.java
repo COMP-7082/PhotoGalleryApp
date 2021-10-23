@@ -3,19 +3,30 @@ package com.example.photogalleryapp.presenters;
 import static android.app.Activity.RESULT_OK;
 import static androidx.core.app.ActivityCompat.startActivityForResult;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
-import com.example.photogalleryapp.SearchActivity;
 import com.example.photogalleryapp.model.Photo;
 import com.example.photogalleryapp.model.PhotoRepository;
+import com.example.photogalleryapp.views.GpsTracker;
 import com.example.photogalleryapp.views.MainView;
+import com.example.photogalleryapp.views.SearchActivity;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +34,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class MainPresenterImpl implements MainPresenter {
@@ -179,5 +191,57 @@ public class MainPresenterImpl implements MainPresenter {
     public Intent search() {
         Intent intent = new Intent(context, SearchActivity.class);
         return intent;
+    }
+
+    public void fusedLocationClient(){
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(context, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            // Logic to handle location object
+                        }
+                    }
+                });
+        try {
+            if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+                ActivityCompat.requestPermissions(context, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 101);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public String getLocation(){
+        GpsTracker gpsTracker = new GpsTracker(context);
+        if(gpsTracker.canGetLocation()){
+            Geocoder gcd = new Geocoder(context, Locale.getDefault());
+            List<Address> addresses;
+
+            try {
+                addresses = gcd.getFromLocation(gpsTracker.getLatitude(),
+                        gpsTracker.getLongitude(), 1);
+                if (addresses.size() > 0) {
+                    System.out.println(addresses.get(0).getLocality());
+                    cityName = addresses.get(0).getLocality();
+                }
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return cityName;
+        }else{
+            gpsTracker.showSettingsAlert();
+            return "Error!";
+        }
     }
 }
