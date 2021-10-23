@@ -14,8 +14,6 @@ import com.example.photogalleryapp.R;
 import com.example.photogalleryapp.presenters.MainPresenter;
 import com.example.photogalleryapp.presenters.MainPresenterImpl;
 
-import java.util.Date;
-
 public class MainActivity extends AppCompatActivity implements MainView {
 
     static final int SEARCH_ACTIVITY_REQUEST_CODE = 2;
@@ -31,7 +29,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
         presenter = new MainPresenterImpl(this); //Adding presenter
         presenter.bindView(this);
         presenter.fusedLocationClient();
-        presenter.findPhotos(new Date(Long.MIN_VALUE), new Date(), "", "");
     }
 
     public void getLocation(View v){ tvCity.setText(presenter.getLocation()); }

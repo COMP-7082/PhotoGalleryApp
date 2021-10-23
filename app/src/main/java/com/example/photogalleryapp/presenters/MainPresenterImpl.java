@@ -42,10 +42,10 @@ public class MainPresenterImpl implements MainPresenter {
     private MainView view;
     private final Activity context;
     Bundle bundle;
-    private ArrayList<Photo> photos = null;
+    private final ArrayList<Photo> photos = null;
     String cityName = null;
     String mCurrentPhotoPath;
-    private PhotoRepository repository;
+    private final PhotoRepository repository;
     private int index = 0;
 
     static final int SEARCH_ACTIVITY_REQUEST_CODE = 0;
@@ -83,7 +83,7 @@ public class MainPresenterImpl implements MainPresenter {
                 String keywords = data.getStringExtra("KEYWORDS");
                 String locate = data.getStringExtra("LOCATE");
                 index = 0;
-                findPhotos(startTimestamp, endTimestamp, keywords, locate);
+                repository.findPhotos(startTimestamp, endTimestamp, keywords, locate);
                 if (repository.getPhotos().size() == 0) {
                     view.displayPhoto(null);
                 } else {
@@ -94,24 +94,8 @@ public class MainPresenterImpl implements MainPresenter {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             //ImageView mImageView = findViewById(R.id.ivGallery);
             //mImageView.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath));
-            findPhotos(new Date(Long.MIN_VALUE), new Date(), "", "");
-        }
-    }
-
-    public void findPhotos(Date startTimestamp, Date endTimestamp, String keywords, String locate){
-        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "/Android/data/com.example.photogalleryapp/files/Pictures");
-        ArrayList<Photo> photos = new ArrayList<>();
-        File[] fList = file.listFiles();
-        if(fList != null){
-            for (File f : fList) {
-                if (((startTimestamp == null && endTimestamp == null) || (f.lastModified() >= startTimestamp.getTime()
-                        && f.lastModified() <= endTimestamp.getTime())) && (keywords.equals("") || f.getPath().contains(keywords))  && (locate.equals("") || f.getPath().contains(locate))) {
-                    repository.PhotoCreate(f.getPath());
-                }
-            }
-            for (Photo p : repository.getPhotos()) {
-                view.displayPhoto(p.getPhotoPath());
-            }
+            repository.findPhotos(new Date(Long.MIN_VALUE), new Date(), "", "");
+            view.displayPhoto(repository.getPhotos().get(index).getPhotoPath());
         }
     }
 
