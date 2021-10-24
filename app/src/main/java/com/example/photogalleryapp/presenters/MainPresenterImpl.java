@@ -3,19 +3,30 @@ package com.example.photogalleryapp.presenters;
 import static android.app.Activity.RESULT_OK;
 import static androidx.core.app.ActivityCompat.startActivityForResult;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
-import com.example.photogalleryapp.SearchActivity;
 import com.example.photogalleryapp.model.Photo;
 import com.example.photogalleryapp.model.PhotoRepository;
+import com.example.photogalleryapp.views.GpsTracker;
 import com.example.photogalleryapp.views.MainView;
+import com.example.photogalleryapp.views.SearchActivity;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +34,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class MainPresenterImpl implements MainPresenter {
@@ -30,13 +42,13 @@ public class MainPresenterImpl implements MainPresenter {
     private MainView view;
     private final Activity context;
     Bundle bundle;
-    private ArrayList<Photo> photos = null;
+    private final ArrayList<Photo> photos = null;
     String cityName = null;
     String mCurrentPhotoPath;
-    private PhotoRepository repository;
+    private final PhotoRepository repository;
     private int index = 0;
 
-    static final int SEARCH_ACTIVITY_REQUEST_CODE = 0;
+    static final int SEARCH_ACTIVITY_REQUEST_CODE = 2;
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
     @Override
@@ -52,6 +64,7 @@ public class MainPresenterImpl implements MainPresenter {
     public MainPresenterImpl(Activity context) {
         this.context = context;
         repository = new PhotoRepository(context);
+        repository.findPhotos(new Date(Long.MIN_VALUE), new Date(), "", "");
     }
 
     public void onReturn(int requestCode, int resultCode, Intent data){
@@ -71,7 +84,7 @@ public class MainPresenterImpl implements MainPresenter {
                 String keywords = data.getStringExtra("KEYWORDS");
                 String locate = data.getStringExtra("LOCATE");
                 index = 0;
-                findPhotos(startTimestamp, endTimestamp, keywords, locate);
+                repository.findPhotos(startTimestamp, endTimestamp, keywords, locate);
                 if (repository.getPhotos().size() == 0) {
                     view.displayPhoto(null);
                 } else {
@@ -82,24 +95,8 @@ public class MainPresenterImpl implements MainPresenter {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             //ImageView mImageView = findViewById(R.id.ivGallery);
             //mImageView.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath));
-            findPhotos(new Date(Long.MIN_VALUE), new Date(), "", "");
-        }
-    }
-
-    public void findPhotos(Date startTimestamp, Date endTimestamp, String keywords, String locate){
-        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "/Android/data/com.example.photogalleryapp/files/Pictures");
-        ArrayList<Photo> photos = new ArrayList<>();
-        File[] fList = file.listFiles();
-        if(fList != null){
-            for (File f : fList) {
-                if (((startTimestamp == null && endTimestamp == null) || (f.lastModified() >= startTimestamp.getTime()
-                        && f.lastModified() <= endTimestamp.getTime())) && (keywords.equals("") || f.getPath().contains(keywords))  && (locate.equals("") || f.getPath().contains(locate))) {
-                    repository.PhotoCreate(f.getPath());
-                }
-            }
-            for (Photo p : repository.getPhotos()) {
-                view.displayPhoto(p.getPhotoPath());
-            }
+            repository.findPhotos(new Date(Long.MIN_VALUE), new Date(), "", "");
+            view.displayPhoto(repository.getPhotos().get(index).getPhotoPath());
         }
     }
 
@@ -179,5 +176,57 @@ public class MainPresenterImpl implements MainPresenter {
     public Intent search() {
         Intent intent = new Intent(context, SearchActivity.class);
         return intent;
+    }
+
+    public void fusedLocationClient(){
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(context, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            // Logic to handle location object
+                        }
+                    }
+                });
+        try {
+            if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+                ActivityCompat.requestPermissions(context, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 101);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public String getLocation(){
+        GpsTracker gpsTracker = new GpsTracker(context);
+        if(gpsTracker.canGetLocation()){
+            Geocoder gcd = new Geocoder(context, Locale.getDefault());
+            List<Address> addresses;
+
+            try {
+                addresses = gcd.getFromLocation(gpsTracker.getLatitude(),
+                        gpsTracker.getLongitude(), 1);
+                if (addresses.size() > 0) {
+                    System.out.println(addresses.get(0).getLocality());
+                    cityName = addresses.get(0).getLocality();
+                }
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return cityName;
+        }else{
+            gpsTracker.showSettingsAlert();
+            return "Error!";
+        }
     }
 }
