@@ -48,7 +48,7 @@ public class MainPresenterImpl implements MainPresenter {
     private final PhotoRepository repository;
     private int index = 0;
 
-    static final int SEARCH_ACTIVITY_REQUEST_CODE = 0;
+    static final int SEARCH_ACTIVITY_REQUEST_CODE = 2;
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
     @Override
@@ -64,6 +64,7 @@ public class MainPresenterImpl implements MainPresenter {
     public MainPresenterImpl(Activity context) {
         this.context = context;
         repository = new PhotoRepository(context);
+        repository.findPhotos(new Date(Long.MIN_VALUE), new Date(), "", "");
     }
 
     public void onReturn(int requestCode, int resultCode, Intent data){
