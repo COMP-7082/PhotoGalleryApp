@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">Photo Gallery App</string>
-    <string name="edit_message">Enter a message</string>
     <string name="button_send">Snap</string>
     <string name="button_next">Next</string>
     <string name="button_prev">Prev</string>
     <string name="button_search">Search</string>
     <string name="text_location">City</string>
+    <string name="cntDescPhoto">Photo</string>
 </resources>

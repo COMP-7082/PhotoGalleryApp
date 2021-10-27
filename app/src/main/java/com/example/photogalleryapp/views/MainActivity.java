@@ -1,5 +1,8 @@
 package com.example.photogalleryapp.views;
 
+import static android.os.Debug.startMethodTracing;
+import static android.os.Debug.stopMethodTracing;
+
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -22,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        startMethodTracing("onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -29,20 +33,23 @@ public class MainActivity extends AppCompatActivity implements MainView {
         presenter = new MainPresenterImpl(this); //Adding presenter
         presenter.bindView(this);
         presenter.fusedLocationClient();
+        stopMethodTracing();
+
     }
 
-    public void getLocation(View v){ tvCity.setText(presenter.getLocation()); }
+    public void getLocation(View v){ tvCity.setText(presenter.getLocation()); } // Get location
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        presenter.onReturn(requestCode, resultCode, data);
+        presenter.onReturn(requestCode, resultCode, data); //Handle different screen states
     }
 
     public void takePhoto(View v){
         presenter.takePhoto();
-    }
+    } // Capture photo
 
+    //Display the photo
     @Override
     public void displayPhoto(String path) {
         ImageView iv = findViewById(R.id.ivGallery);
