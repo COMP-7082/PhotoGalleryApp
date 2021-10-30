@@ -20,14 +20,14 @@ import android.graphics.BitmapFactory;
 
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+
+import com.example.photogalleryapp.views.MainActivity;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import com.example.photogalleryapp.views.MainActivity;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -69,8 +69,8 @@ InstrumentationRegistry.getInstrumentation().getTargetContext().getResources(),
         onView(withId(R.id.btnPrev)).perform(click());
         onView(withId(R.id.btnNext)).perform(click());
         onView(withId(R.id.btnSearch)).perform(click());
-        onView(withId(R.id.etFromDateTime)).perform(replaceText("2021‐10‐05 00:00:00"), closeSoftKeyboard());
-        onView(withId(R.id.etToDateTime)).perform(replaceText("2021‐10‐06 00:00:00"), closeSoftKeyboard());
+        onView(withId(R.id.etFromDateTime)).perform(replaceText("2021‐10‐00 00:00:00"), closeSoftKeyboard());
+        onView(withId(R.id.etToDateTime)).perform(replaceText("2021‐11‐01 00:00:00"), closeSoftKeyboard());
         onView(withId(R.id.etKeywords)).perform(typeText("Sofa"), closeSoftKeyboard());
         onView(withId(R.id.go)).perform(click());
         onView(withId(R.id.etCaption)).check(matches(withText("Sofa")));

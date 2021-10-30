@@ -8,6 +8,7 @@
     tools:context=".views.MainActivity">
 
     <ImageView
+        android:contentDescription="@string/cntDescPhoto"
         android:id="@+id/ivGallery"
         android:layout_width="356dp"
         android:layout_height="265dp"
@@ -95,6 +96,8 @@
         app:layout_constraintVertical_bias="0.255" />
 
     <EditText
+        android:labelFor="@+id/etCaption"
+        android:autofillHints="name"
         android:id="@+id/etCaption"
         android:layout_width="372dp"
         android:layout_height="wrap_content"
@@ -127,7 +130,7 @@
 
     <TextView
 
-        android:id="@+id/location"
+        android:id="@+id/txtlocation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
